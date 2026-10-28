@@ -41,10 +41,22 @@ frontend to `https://anshuman642.github.io/AlertIQ/` when changes are pushed to
 Source** to **GitHub Actions**.
 
 GitHub Pages hosts only the static frontend; it does not run the FastAPI
-backend. To use login, analysis, and history on the deployed site, deploy the
-backend separately, then add a repository Actions variable named `VITE_API_URL`
-with its base URL (for example, `https://api.example.com`). The backend is
-configured to accept requests from the GitHub Pages site.
+backend. To deploy the backend on Render:
+
+1. In Render, choose **New → Blueprint**, connect this GitHub repository, and
+   apply the `render.yaml` blueprint. It creates a free `alertiq-api` web
+   service. Wait for its `/health` check to pass and copy the service URL.
+2. In GitHub, open **Settings → Secrets and variables → Actions → Variables**,
+   add a repository variable named `VITE_API_URL`, and set it to the Render
+   service URL (for example, `https://alertiq-api.onrender.com`, with no
+   trailing slash).
+3. In GitHub **Actions**, rerun **Deploy frontend to GitHub Pages** so the
+   frontend is rebuilt with the backend URL.
+
+The backend allows requests from the GitHub Pages site. Render Free services
+may sleep when idle and use ephemeral storage; since this app uses SQLite,
+accounts and history can be lost when the service restarts or redeploys. The
+optional OpenAI key is not required for rule-based analysis.
 
 ## Available flows
 

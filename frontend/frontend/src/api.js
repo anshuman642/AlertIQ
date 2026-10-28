@@ -21,7 +21,9 @@ async function request(path, options = {}) {
   const isJson = response.headers.get("content-type")?.includes("application/json");
   const data = isJson ? await response.json().catch(() => null) : null;
   if (!response.ok) {
-    const message = Array.isArray(data?.detail)
+    const message = response.status === 405 && !API_BASE_URL
+      ? "Backend abhi connect nahi hai. Render par backend deploy karke GitHub Actions variable VITE_API_URL mein uska URL set karein, phir Pages workflow dobara run karein."
+      : Array.isArray(data?.detail)
       ? data.detail.map((error) => error.msg).join(" ")
       : data?.detail || (
         !isJson
